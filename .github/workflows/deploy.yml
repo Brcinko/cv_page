@@ -22,12 +22,13 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.VPS_HOSTNAME }} >> ~/.ssh/known_hosts
-        cat ~/.ssh/known_hosts
 
     # Step 3: Deploy the files to the VPS
     - name: Deploy files
       run: |
+        touch ~/.ssh/known_hosts
+        ssh-keyscan -H ${{ secrets.VPS_HOSTNAME }} >> ~/.ssh/known_hosts
+        cat ~/.ssh/known_hosts
         rsync -e "ssh -p ${{ secrets.VPS_SSH_PORT }}" -avz --delete ./ ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOSTNAME }}:${{ secrets.PATH_TO_FOLDER}}
 
     # Step 4: Restart Nginx
